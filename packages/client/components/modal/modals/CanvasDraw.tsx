@@ -1,9 +1,13 @@
+import { useClient } from "@revolt/client";
+import { CONFIGURATION } from "@revolt/common";
+import { useState } from "@revolt/state";
 import { Dialog } from "@revolt/ui";
-import { createEffect, createSignal } from "solid-js";
-import { File } from "stoat.js";
+import { useParams } from "@solidjs/router";
+import { createEffect, createMemo, createSignal } from "solid-js";
+import { File as StoatFile } from "stoat.js";
 import { Flex } from "styled-system/jsx/flex";
 
-export default function Body(props: { file: File }) {
+export default function Body(props: { file: { file: File } }) {
   let canvasRef;
   let fileInputRef;
   let targetElementRef;
@@ -19,6 +23,10 @@ export default function Body(props: { file: File }) {
   const [smoothDrawing, setSmoothDrawing] = createSignal(true);
   const [gif, setGif] = createSignal(null);
   const [hasDrawn, setHasDrawn] = createSignal(false);
+  const client = useClient();
+  const state = useState();
+  const params = useParams();
+  const channel = createMemo(() => client()!.channels.get(params.channel)!);
 
   let lastPoint = null;
 
@@ -194,21 +202,31 @@ export default function Body(props: { file: File }) {
     }
   };
 
-  const handleUploadClick = () => {
+  const handleUploadClick = async () => {
     const canvas = canvasRef;
-    if (!canvas) return;
 
-    canvas.toBlob((blob) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const buffer = e.target.result;
-        // TODO: duh
-        //upload(props.name, buffer, props.channelId);
-        console.log(props);
-        // LayerActions.popLayer();
-      };
-      reader.readAsArrayBuffer(blob);
-    }, "image/png");
+    if (!canvas) {
+      return;
+    }
+
+    const blob = await new Promise((resolve) => {
+      canvas.toBlob((b) => {
+        resolve(b);
+      }, props.file.file.type || 'image/png');
+    });
+
+    if (!blob) {
+      console.error("NO BLOB CREATED");
+      return;
+    }
+
+    const file = new File(
+      [blob],
+      props.file.file.name || 'edited-image.png',
+      { type: blob.type }
+    );
+
+    const result = state.draft.addFile(channel().id, file);
   };
 
   return (
