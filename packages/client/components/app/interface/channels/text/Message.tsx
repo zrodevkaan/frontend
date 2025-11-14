@@ -20,7 +20,9 @@ import {
   SystemMessage,
   SystemMessageIcon,
   Tooltip,
+  typography,
   Username,
+  UserStatus,
 } from "@revolt/ui";
 import { Symbol } from "@revolt/ui/components/utils/Symbol";
 
@@ -100,15 +102,18 @@ export function Message(props: Props) {
    */
   const unreact = (emoji: string) => props.message.unreact(emoji);
 
+  const hasExtra = props.message.server?.getMember(props.message.authorId!)?.nickname || props.message.author?.displayName
+
   return (
     <MessageContainer
       message={props.message}
       username={
         <div use:floating={floatingUserMenusFromMessage(props.message)}>
           <Username
-            username={props.message.username}
+            username={hasExtra || props.message.author?.username}
             colour={props.message.roleColour!}
           />
+          {Boolean(hasExtra) ? <span style={{ color: 'gray', "font-size": '12px' }}> ({props.message.author?.username}#{props.message.author?.discriminator})</span> : ''}
         </div>
       }
       avatar={
@@ -116,7 +121,10 @@ export function Message(props: Props) {
           class={avatarContainer()}
           use:floating={floatingUserMenusFromMessage(props.message)}
         >
-          <Avatar size={36} src={props.message.avatarURL} />
+          <Avatar holepunch="bottom-right"
+            overlay={<UserStatus.Graphic status={props.message.author?.status?.presence || "Invisible"} />}
+            size={36}
+            src={props.message.avatarURL} />
         </div>
       }
       contextMenu={() => <MessageContextMenu message={props.message} />}
@@ -247,10 +255,10 @@ export function Message(props: Props) {
           menuGenerator={(user) =>
             user
               ? floatingUserMenus(
-                  user!,
-                  // TODO: try to fetch on demand member
-                  props.message.server?.getMember(user!.id),
-                )
+                user!,
+                // TODO: try to fetch on demand member
+                props.message.server?.getMember(user!.id),
+              )
               : {}
           }
           isServer={!!props.message.server}

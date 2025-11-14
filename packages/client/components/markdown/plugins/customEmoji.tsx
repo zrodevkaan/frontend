@@ -1,4 +1,4 @@
-import { Match, Switch, createSignal, onMount } from "solid-js";
+import { Match, Show, Switch, createEffect, createSignal, onMount } from "solid-js";
 
 import { Handler } from "mdast-util-to-hast";
 import { cva } from "styled-system/css";
@@ -6,9 +6,103 @@ import { Plugin } from "unified";
 import { visit } from "unist-util-visit";
 
 import { useClient } from "@revolt/client";
-import { Avatar, Column, Row } from "@revolt/ui";
+import { Avatar, Column, MenuButton, OverflowingText, Row, Tooltip, typography, Username, UserStatus } from "@revolt/ui";
 
 import { CustomEmoji, Emoji, RE_CUSTOM_EMOJI } from "../emoji";
+import { styled } from "styled-system/jsx";
+import { User } from "stoat.js";
+import { GroupMemberSidebar } from "src/interface/channels/text/MemberSidebar";
+import { useLingui } from "@lingui-solid/solid";
+import { userInformation } from "../users";
+import { floatingUserMenus } from "@revolt/app/menus/UserContextMenu";
+import { TextWithEmoji } from "../emoji/TextWithEmoji";
+
+const RenderAvatarOnEmoji = styled('div', {
+  base: {
+    position: "absolute"
+  }
+})
+
+const NameStatusStack = styled("div", {
+  base: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+  },
+});
+
+function Member(props: { user?: User; member?: ServerMember }) {
+  const { t } = useLingui();
+
+  /**
+   * Create user information
+   */
+  const user = () =>
+    userInformation((props.user ?? props.member?.user)!, props.member);
+
+  /**
+   * Get user status
+   */
+  const status = () =>
+    (props.user ?? props.member?.user)?.statusMessage((s) =>
+      s === "Online"
+        ? t`Online`
+        : s === "Busy"
+          ? t`Busy`
+          : s === "Focus"
+            ? t`Focus`
+            : s === "Idle"
+              ? t`Idle`
+              : t`Offline`,
+    );
+
+  return (
+    <div
+      use:floating={floatingUserMenus(
+        (props.user ?? props.member?.user)!,
+        props.member,
+      )}
+    >
+      <MenuButton
+        size="normal"
+        attention={
+          (props.user ?? props.member?.user)?.online ? "active" : "muted"
+        }
+        icon={
+          <Avatar
+            src={user().avatar}
+            size={32}
+            holepunch="bottom-right"
+            overlay={
+              <UserStatus.Graphic
+                status={(props.user ?? props.member?.user)?.presence}
+              />
+            }
+          />
+        }
+      >
+        <NameStatusStack>
+          <OverflowingText>
+            <Username username={user().username} colour={user().colour!} />
+          </OverflowingText>
+          <Show when={status()}>
+            <Tooltip
+              content={() => <TextWithEmoji content={status()!} />}
+              placement="top-start"
+              aria={status()!}
+            >
+              <OverflowingText class={typography({ class: "_status" })}>
+                <TextWithEmoji content={status()!} />
+              </OverflowingText>
+            </Tooltip>
+          </Show>
+        </NameStatusStack>
+      </MenuButton>
+    </div>
+  );
+}
+
 
 /**
  * Render a custom emoji
@@ -17,6 +111,7 @@ import { CustomEmoji, Emoji, RE_CUSTOM_EMOJI } from "../emoji";
  */
 export function RenderCustomEmoji(props: { id: string }) {
   const [exists, setExists] = createSignal(true);
+  const [user, setUser] = createSignal<User>()
 
   const client = useClient();
 
@@ -24,6 +119,14 @@ export function RenderCustomEmoji(props: { id: string }) {
    * Resolve emoji
    */
   const emoji = () => client()!.emojis.get(props.id);
+
+  createEffect(() => {
+    (async () => {
+      const fetchedUser = await client().users.fetch(String(emoji()?.creator?.id))
+      console.log(fetchedUser)
+      setUser(fetchedUser)
+    })()
+  })
 
   /**
    * Resolve server
@@ -71,13 +174,13 @@ export function RenderCustomEmoji(props: { id: string }) {
                       </Column>
                     </Match>
                   </Switch>
+                  <Member user={user()} />
                 </Row>
               ),
               aria:
                 emoji()?.parent.type === "Server"
-                  ? `:${emoji()!.name}: from ${
-                      server()?.name ?? "Private Server"
-                    }`
+                  ? `:${emoji()!.name}: from ${server()?.name ?? "Private Server"
+                  }`
                   : "Unknown emote",
             },
           }}
@@ -123,15 +226,15 @@ export const remarkCustomEmoji: Plugin = () => (tree) => {
       const newNodes: (
         | { type: "text"; value: string }
         | {
-            type: "customEmoji";
-            id: string;
-          }
+          type: "customEmoji";
+          id: string;
+        }
       )[] = [
-        {
-          type: "text",
-          value: elements.shift()!,
-        },
-      ];
+          {
+            type: "text",
+            value: elements.shift()!,
+          },
+        ];
 
       // Process all timestamps
       for (let i = 0; i < elements.length / 2; i++) {

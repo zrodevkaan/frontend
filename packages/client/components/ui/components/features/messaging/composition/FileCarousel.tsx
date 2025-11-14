@@ -7,10 +7,12 @@ import { CONFIGURATION } from "@revolt/common";
 import { ALLOWED_IMAGE_TYPES } from "@revolt/state/stores/Draft";
 import { Ripple, typography } from "@revolt/ui/components/design";
 import { OverflowingText, iconSize } from "@revolt/ui/components/utils";
+import { Symbol } from "@revolt/ui/components/utils/Symbol";
 
 import MdAdd from "@material-design-icons/svg/outlined/add.svg?component-solid";
 import MdCancel from "@material-design-icons/svg/outlined/cancel.svg?component-solid";
 import MdFile from "@material-design-icons/svg/outlined/description.svg?component-solid";
+import { useModals } from "@revolt/modal";
 
 interface Props {
   /**
@@ -58,6 +60,8 @@ export function determineFileSize(size: number) {
  * File carousel
  */
 export function FileCarousel(props: Props) {
+  const { openModal } = useModals();
+
   return (
     <Show when={props.files.length}>
       <Container>
@@ -110,6 +114,7 @@ export function FileCarousel(props: Props) {
                       <OverflowingText>{file().file.name}</OverflowingText>
                     </FileName>
                     <Size>{determineFileSize(file().file.size)}</Size>
+                    <Symbol onClick={() => openModal({ type: 'drawx', file: file() })}>edit</Symbol>
                   </Entry>
                 </>
               );

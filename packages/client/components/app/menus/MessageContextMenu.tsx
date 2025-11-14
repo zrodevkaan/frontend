@@ -25,12 +25,7 @@ import MdShield from "@material-design-icons/svg/outlined/shield.svg?component-s
 
 import MdSentimentContent from "@material-symbols/svg-400/outlined/sentiment_content.svg?component-solid";
 
-import {
-  ContextMenu,
-  ContextMenuButton,
-  ContextMenuDivider,
-  ContextMenuSubMenu,
-} from "./ContextMenu";
+import { ContextMenu, ContextMenuButton, ContextMenuDivider, ContextMenuSubMenu } from "./ContextMenu";
 
 /**
  * Context menu for messages
@@ -131,6 +126,10 @@ export function MessageContextMenu(props: { message?: Message; file?: File }) {
 
   return (
     <ContextMenu>
+      <ContextMenuButton onClick={() => openModal({type: 'debug_props', message: props.message!})}>
+        <Trans>Debug Dialog</Trans>
+      </ContextMenuButton>
+      <ContextMenuDivider />
       <Show when={props.file}>
         <ContextMenuButton icon={MdOpenInNew} onClick={OpenFile}>
           <Trans>Open file</Trans>

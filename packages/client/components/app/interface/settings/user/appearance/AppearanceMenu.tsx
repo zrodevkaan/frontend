@@ -1,4 +1,4 @@
-import { For, Match, Show, Switch } from "solid-js";
+import { createSignal, For, Match, Show, Switch } from "solid-js";
 
 import { Trans } from "@lingui-solid/solid/macro";
 import { css } from "styled-system/css";
@@ -36,6 +36,7 @@ import {
 export function AppearanceMenu() {
   const user = useUser();
   const state = useState();
+  const [textValue, setTextValue] = createSignal(state.theme.m3Accent)
 
   return (
     <Column gap="lg">
@@ -104,6 +105,7 @@ export function AppearanceMenu() {
                 "#549bec",
                 "#5470ec",
                 "#8C5FD3",
+                "#ff8ff4"
               ]}
             >
               {(colour) => (
@@ -126,6 +128,15 @@ export function AppearanceMenu() {
                 // />
               )}
             </For>
+            <Button
+              size="md"
+              bg={"#FFF"}
+              group="standard"
+              onPress={() => state.theme.setM3Accent(textValue())}
+            />
+            <textarea value={textValue()} onChange={(e) => {
+              setTextValue(e.target.value)
+            }}></textarea>
             {/* <div
             class={css({
               borderRadius: "var(--borderRadius-full)",

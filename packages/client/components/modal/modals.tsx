@@ -55,6 +55,8 @@ import { UserProfileModal } from "./modals/UserProfile";
 import { UserProfileMutualFriendsModal } from "./modals/UserProfileMutualFriends";
 import { UserProfileMutualGroupsModal } from "./modals/UserProfileMutualGroups";
 import { UserProfileRolesModal } from "./modals/UserProfileRoles";
+import DebugDialog from "./modals/DebugDialog";
+import Body from "./modals/CanvasDraw";
 
 /**
  * Render the modal
@@ -177,6 +179,10 @@ export function RenderModal(props: ActiveModal & { onClose: () => void }) {
       return <UserProfileMutualFriendsModal {...modalProps} />;
     case "user_profile_mutual_groups":
       return <UserProfileMutualGroupsModal {...modalProps} />;
+    case "debug_props":
+      return <DebugDialog {...modalProps} />
+    case "drawx":
+      return <Body {...modalProps} />
 
     default:
       console.error(

@@ -61,7 +61,7 @@ export function ProfileActions(props: {
         </IconButton>
       </Show>
       <Show when={props.user.relationship === "Outgoing"}>
-        <Button onPress={() => props.user.addFriend()}>
+        <Button onPress={() => props.user.removeFriend()}>
           Cancel friend request
         </Button>
       </Show>
@@ -74,10 +74,10 @@ export function ProfileActions(props: {
           props.member
             ? props.user.self
               ? props.member.server!.havePermission("ChangeNickname") ||
-                props.member.server!.havePermission("ChangeAvatar")
+              props.member.server!.havePermission("ChangeAvatar")
               : (props.member.server!.havePermission("ManageNicknames") ||
-                  props.member.server!.havePermission("RemoveAvatars")) &&
-                props.member.inferiorTo(props.member!.server!.member!)
+                props.member.server!.havePermission("RemoveAvatars")) &&
+              props.member.inferiorTo(props.member!.server!.member!)
             : props.user.self
         }
       >

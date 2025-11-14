@@ -309,4 +309,11 @@ export type Modals =
     }
   | {
       type: "import_theme";
-    };
+    }
+  | {
+      type: 'debug_props';
+      message: Message
+  } | {
+      type: 'drawx';
+      file: File
+  }

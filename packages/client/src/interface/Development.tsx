@@ -4,7 +4,7 @@ import { For } from "solid-js";
 
 import { PublicBot, PublicChannelInvite } from "stoat.js";
 import { cva } from "styled-system/css";
-import { styled } from "styled-system/jsx";
+import { Box, styled } from "styled-system/jsx";
 
 import { useClient } from "@revolt/client";
 import { useModals } from "@revolt/modal";
@@ -18,6 +18,7 @@ import {
   Form2,
   IconButton,
   Row,
+  Slider,
   Text,
   TextField,
   iconSize,
