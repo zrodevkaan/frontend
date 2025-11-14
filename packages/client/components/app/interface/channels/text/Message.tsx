@@ -1,4 +1,4 @@
-import { For, Match, Show, Switch, onMount } from "solid-js";
+import { For, Match, onMount, Show, Switch } from "solid-js";
 
 import { useLingui } from "@lingui-solid/solid/macro";
 import { Message as MessageInterface, WebsiteEmbed } from "stoat.js";
@@ -20,7 +20,6 @@ import {
   SystemMessage,
   SystemMessageIcon,
   Tooltip,
-  typography,
   Username,
   UserStatus,
 } from "@revolt/ui";
@@ -102,7 +101,9 @@ export function Message(props: Props) {
    */
   const unreact = (emoji: string) => props.message.unreact(emoji);
 
-  const hasExtra = props.message.server?.getMember(props.message.authorId!)?.nickname || props.message.author?.displayName
+  const hasExtra =
+    props.message.server?.getMember(props.message.authorId!)?.nickname ||
+    props.message.author?.displayName;
 
   return (
     <MessageContainer
@@ -113,7 +114,15 @@ export function Message(props: Props) {
             username={hasExtra || props.message.author?.username}
             colour={props.message.roleColour!}
           />
-          {Boolean(hasExtra) ? <span style={{ color: 'gray', "font-size": '12px' }}> ({props.message.author?.username}#{props.message.author?.discriminator})</span> : ''}
+          {Boolean(hasExtra) ? (
+            <span style={{ color: "gray", "font-size": "12px" }}>
+              {" "}
+              ({props.message.author?.username}#
+              {props.message.author?.discriminator})
+            </span>
+          ) : (
+            ""
+          )}
         </div>
       }
       avatar={
@@ -121,10 +130,16 @@ export function Message(props: Props) {
           class={avatarContainer()}
           use:floating={floatingUserMenusFromMessage(props.message)}
         >
-          <Avatar holepunch="bottom-right"
-            overlay={<UserStatus.Graphic status={props.message.author?.status?.presence || "Invisible"} />}
+          <Avatar
+            holepunch="bottom-right"
+            overlay={
+              <UserStatus.Graphic
+                status={props.message.author?.status?.presence || "Invisible"}
+              />
+            }
             size={36}
-            src={props.message.avatarURL} />
+            src={props.message.avatarURL}
+          />
         </div>
       }
       contextMenu={() => <MessageContextMenu message={props.message} />}
@@ -255,10 +270,10 @@ export function Message(props: Props) {
           menuGenerator={(user) =>
             user
               ? floatingUserMenus(
-                user!,
-                // TODO: try to fetch on demand member
-                props.message.server?.getMember(user!.id),
-              )
+                  user!,
+                  // TODO: try to fetch on demand member
+                  props.message.server?.getMember(user!.id),
+                )
               : {}
           }
           isServer={!!props.message.server}

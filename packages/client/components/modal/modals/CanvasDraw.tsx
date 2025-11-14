@@ -1,7 +1,7 @@
-import { Dialog } from '@revolt/ui';
-import { createSignal, createEffect, onMount, onCleanup, untrack } from 'solid-js';
-import { File } from 'stoat.js';
-import { Flex } from 'styled-system/jsx/flex';
+import { Dialog } from "@revolt/ui";
+import { createEffect, createSignal } from "solid-js";
+import { File } from "stoat.js";
+import { Flex } from "styled-system/jsx/flex";
 
 export default function Body(props: { file: File }) {
   let canvasRef;
@@ -12,32 +12,48 @@ export default function Body(props: { file: File }) {
   const [context, setContext] = createSignal(null);
   const [backgroundImage, setBackgroundImage] = createSignal(null);
   const [canvasSize, setCanvasSize] = createSignal({ width: 800, height: 600 });
-  const [brushColor, setBrushColor] = createSignal('#00FFAA');
+  const [brushColor, setBrushColor] = createSignal("#00FFAA");
   const [brushSize, setBrushSize] = createSignal(3);
   const [shouldShow, setShouldShow] = createSignal(false);
   const [points, setPoints] = createSignal([]);
   const [smoothDrawing, setSmoothDrawing] = createSignal(true);
   const [gif, setGif] = createSignal(null);
-  const [hasDrawn, setHasDrawn] = createSignal(false)
+  const [hasDrawn, setHasDrawn] = createSignal(false);
 
   let lastPoint = null;
 
-  const colors = ['black', 'red', 'blue', 'tan', 'gray', 'white', 'green', 'yellow', 'purple', 'orange', 'pink', 'cyan'];
+  const colors = [
+    "black",
+    "red",
+    "blue",
+    "tan",
+    "gray",
+    "white",
+    "green",
+    "yellow",
+    "purple",
+    "orange",
+    "pink",
+    "cyan",
+  ];
 
   createEffect(() => {
     const canvas = canvasRef;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d', { willReadFrequently: false, alpha: true });
+    const ctx = canvas.getContext("2d", {
+      willReadFrequently: false,
+      alpha: true,
+    });
     if (!ctx) return;
 
     setContext(ctx);
     ctx.lineWidth = brushSize();
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.strokeStyle = brushColor();
     ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
+    ctx.imageSmoothingQuality = "high";
 
     if (!hasDrawn() && props.file?.file) {
       // for some reason this gets recalled when changing colors
@@ -60,11 +76,11 @@ export default function Body(props: { file: File }) {
           ctx.drawImage(img, 0, 0, width, height);
 
           ctx.lineWidth = brushSize();
-          ctx.lineCap = 'round';
-          ctx.lineJoin = 'round';
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
           ctx.strokeStyle = brushColor();
           ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
+          ctx.imageSmoothingQuality = "high";
         };
         img.src = e.target.result;
       };
@@ -85,7 +101,7 @@ export default function Body(props: { file: File }) {
   });
 
   createEffect(() => {
-    const ctx = canvasRef?.getContext('2d');
+    const ctx = canvasRef?.getContext("2d");
     if (ctx) {
       ctx.lineWidth = brushSize();
       ctx.strokeStyle = brushColor();
@@ -102,7 +118,7 @@ export default function Body(props: { file: File }) {
 
     return {
       x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY
+      y: (e.clientY - rect.top) * scaleY,
     };
   };
 
@@ -116,7 +132,7 @@ export default function Body(props: { file: File }) {
       ctx.moveTo(pos.x, pos.y);
       lastPoint = pos;
       setPoints([pos]);
-      setHasDrawn(true)
+      setHasDrawn(true);
     }
   };
 
@@ -130,14 +146,9 @@ export default function Body(props: { file: File }) {
     if (smoothDrawing() && lastPoint) {
       const midPoint = {
         x: (lastPoint.x + pos.x) / 2,
-        y: (lastPoint.y + pos.y) / 2
+        y: (lastPoint.y + pos.y) / 2,
       };
-      ctx.quadraticCurveTo(
-        lastPoint.x,
-        lastPoint.y,
-        midPoint.x,
-        midPoint.y
-      );
+      ctx.quadraticCurveTo(lastPoint.x, lastPoint.y, midPoint.x, midPoint.y);
       ctx.stroke();
       lastPoint = pos;
     } else if (lastPoint) {
@@ -146,7 +157,7 @@ export default function Body(props: { file: File }) {
       lastPoint = pos;
     }
 
-    setPoints(prev => [...prev, pos]);
+    setPoints((prev) => [...prev, pos]);
   };
 
   // Throttled pointer move handler
@@ -193,20 +204,20 @@ export default function Body(props: { file: File }) {
         const buffer = e.target.result;
         // TODO: duh
         //upload(props.name, buffer, props.channelId);
-        console.log(props)
+        console.log(props);
         // LayerActions.popLayer();
       };
       reader.readAsArrayBuffer(blob);
-    }, 'image/png');
+    }, "image/png");
   };
 
   return (
     <Dialog {...props} minWidth={1000}>
       <Flex class="color-palette">
-        {colors.map(color => (
+        {colors.map((color) => (
           <div
             class="color-swatch"
-            style={{ "background-color": color, width: '20px', height: '20px' }}
+            style={{ "background-color": color, width: "20px", height: "20px" }}
             onClick={() => setBrushColor(color)}
           />
         ))}
@@ -221,7 +232,7 @@ export default function Body(props: { file: File }) {
         onPointerLeave={handlePointerLeave}
         style={{
           "touch-action": "none",
-          cursor: "crosshair"
+          cursor: "crosshair",
         }}
       />
 

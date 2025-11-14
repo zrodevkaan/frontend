@@ -39,6 +39,6 @@ const Status = styled("span", {
   base: {
     ...typography.raw(),
     userSelect: "text",
-    wordWrap: 'break-word'
+    wordWrap: "break-word",
   },
 });

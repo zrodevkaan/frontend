@@ -8,6 +8,7 @@ import { AddFriendModal } from "./modals/AddFriend";
 import { AddMembersToGroupModal } from "./modals/AddMembersToGroup";
 import { BanMemberModal } from "./modals/BanMember";
 import { BanNonMemberModal } from "./modals/BanNonMember";
+import Body from "./modals/CanvasDraw";
 import { ChangelogModal } from "./modals/Changelog";
 import { ChannelInfoModal } from "./modals/ChannelInfo";
 import { ChannelToggleMatureModal } from "./modals/ChannelToggleMature";
@@ -22,6 +23,7 @@ import { CreateRoleModal } from "./modals/CreateRole";
 import { CreateServerModal } from "./modals/CreateServer";
 import { CreateWebhookModal } from "./modals/CreateWebhook";
 import { CustomStatusModal } from "./modals/CustomStatus";
+import DebugDialog from "./modals/DebugDialog";
 import { DeleteBotModal } from "./modals/DeleteBot";
 import { DeleteCategoryModal } from "./modals/DeleteCategory";
 import { DeleteChannelModal } from "./modals/DeleteChannel";
@@ -55,8 +57,6 @@ import { UserProfileModal } from "./modals/UserProfile";
 import { UserProfileMutualFriendsModal } from "./modals/UserProfileMutualFriends";
 import { UserProfileMutualGroupsModal } from "./modals/UserProfileMutualGroups";
 import { UserProfileRolesModal } from "./modals/UserProfileRoles";
-import DebugDialog from "./modals/DebugDialog";
-import Body from "./modals/CanvasDraw";
 
 /**
  * Render the modal
@@ -180,9 +180,9 @@ export function RenderModal(props: ActiveModal & { onClose: () => void }) {
     case "user_profile_mutual_groups":
       return <UserProfileMutualGroupsModal {...modalProps} />;
     case "debug_props":
-      return <DebugDialog {...modalProps} />
+      return <DebugDialog {...modalProps} />;
     case "drawx":
-      return <Body {...modalProps} />
+      return <Body {...modalProps} />;
 
     default:
       console.error(

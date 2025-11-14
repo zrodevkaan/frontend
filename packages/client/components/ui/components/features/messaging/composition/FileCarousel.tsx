@@ -114,7 +114,11 @@ export function FileCarousel(props: Props) {
                       <OverflowingText>{file().file.name}</OverflowingText>
                     </FileName>
                     <Size>{determineFileSize(file().file.size)}</Size>
-                    <Symbol onClick={() => openModal({ type: 'drawx', file: file() })}>edit</Symbol>
+                    <Symbol
+                      onClick={() => openModal({ type: "drawx", file: file() })}
+                    >
+                      edit
+                    </Symbol>
                   </Entry>
                 </>
               );
