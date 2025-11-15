@@ -1,7 +1,6 @@
-import { For, Match, Show, Switch } from "solid-js";
+import { createEffect, createSignal, For, Match, Show, Switch } from "solid-js";
 
 import { Trans } from "@lingui-solid/solid/macro";
-import { File, Message } from "stoat.js";
 
 import { useClient, useUser } from "@revolt/client";
 import { CustomEmoji, UnicodeEmoji } from "@revolt/markdown/emoji";
@@ -25,12 +24,18 @@ import MdShield from "@material-design-icons/svg/outlined/shield.svg?component-s
 
 import MdSentimentContent from "@material-symbols/svg-400/outlined/sentiment_content.svg?component-solid";
 
+import { Emoji, Message } from "stoat.js";
+import { styled } from "styled-system/jsx";
 import {
   ContextMenu,
   ContextMenuButton,
   ContextMenuDivider,
   ContextMenuSubMenu,
 } from "./ContextMenu";
+
+const EmojiSmallIcon = styled.div({
+  maxWidth: "25px",
+});
 
 /**
  * Context menu for messages
@@ -40,6 +45,7 @@ export function MessageContextMenu(props: { message?: Message; file?: File }) {
   const state = useState();
   const client = useClient();
   const { openModal, showError } = useModals();
+  const [emojis, setEmojis] = createSignal<Emoji[]>();
 
   /**
    * Reply to this message
@@ -47,6 +53,13 @@ export function MessageContextMenu(props: { message?: Message; file?: File }) {
   function reply() {
     state.draft.addReply(props.message!, user()!.id);
   }
+
+  createEffect(() => {
+    (async () => {
+      const foundEmojis = await props.message?.server?.fetchEmojis();
+      setEmojis(foundEmojis);
+    })();
+  });
 
   /**
    * Mark message as unread

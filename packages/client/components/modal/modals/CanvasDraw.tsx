@@ -1,10 +1,8 @@
 import { useClient } from "@revolt/client";
-import { CONFIGURATION } from "@revolt/common";
 import { useState } from "@revolt/state";
 import { Dialog } from "@revolt/ui";
 import { useParams } from "@solidjs/router";
 import { createEffect, createMemo, createSignal } from "solid-js";
-import { File as StoatFile } from "stoat.js";
 import { Flex } from "styled-system/jsx/flex";
 
 export default function Body(props: { file: { file: File } }) {
@@ -212,7 +210,7 @@ export default function Body(props: { file: { file: File } }) {
     const blob = await new Promise((resolve) => {
       canvas.toBlob((b) => {
         resolve(b);
-      }, props.file.file.type || 'image/png');
+      }, props.file.file.type || "image/png");
     });
 
     if (!blob) {
@@ -220,11 +218,9 @@ export default function Body(props: { file: { file: File } }) {
       return;
     }
 
-    const file = new File(
-      [blob],
-      props.file.file.name || 'edited-image.png',
-      { type: blob.type }
-    );
+    const file = new File([blob], props.file.file.name || "edited-image.png", {
+      type: blob.type,
+    });
 
     const result = state.draft.addFile(channel().id, file);
   };

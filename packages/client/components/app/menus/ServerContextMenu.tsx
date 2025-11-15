@@ -1,8 +1,8 @@
-import { For, Show } from "solid-js";
+import { createEffect, createSignal, For, Show } from "solid-js";
 
 import { Trans } from "@lingui-solid/solid/macro";
 import dayjs from "dayjs";
-import { Server } from "stoat.js";
+import { Emoji, Server } from "stoat.js";
 
 import { useClient } from "@revolt/client";
 import { useModals } from "@revolt/modal";
@@ -41,6 +41,15 @@ export function ServerContextMenu(props: { server: Server }) {
   const state = useState();
   const client = useClient();
   const { openModal } = useModals();
+
+  const [emojis, setEmojis] = createSignal<Emoji[]>()
+
+  createEffect(() => {
+    (async () => {
+      const foundEmojis = await props.server?.fetchEmojis()
+      setEmojis(foundEmojis)
+    })()
+  })
 
   /**
    * Mark server as read
@@ -166,7 +175,11 @@ export function ServerContextMenu(props: { server: Server }) {
         </ContextMenuButton>
         <ContextMenuDivider />
       </Show>
-
+      <ContextMenuSubMenu onClick={() => console.log(emojis())} buttonContent={"Server Emojis"}>
+        <For each={emojis()}>
+          {(emoji) => <ContextMenuButton icon={() => <img style={{ width: '20px' }} src={`https://cdn.stoatusercontent.com/emojis/${emoji.id}`} />}><Trans>{emoji.name}</Trans></ContextMenuButton>}
+        </For>
+      </ContextMenuSubMenu>
       <Show
         when={!state.notifications.isMuted(props.server)}
         fallback={
